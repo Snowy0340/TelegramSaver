@@ -3,14 +3,13 @@ import asyncio
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, FSInputFile, InputMediaVideo
-from ytdlp import download_video
+from ytdlp import download_video, download_images, isimages
 
 router = Router()
 
 # @router.message()
 # async def hello(message):
 #     await message.answer("Hello!")
-
 
 @router.message()
 async def penis(message: Message):
@@ -24,16 +23,25 @@ async def penis(message: Message):
 ):
         url = message.text
         file = await asyncio.to_thread(download_video, url)
+
         if not file:
             return
+        
         video = FSInputFile(file)
         await message.reply_video(
             video=FSInputFile("video.mp4")
         )
-        os.remove("video.mp4")
+        os.remove("video.mp4") 
     else: return
 
 
+# @router.message(Command("info"))
+# async def isimage(message: Message):
+#     url = message.text
+#     flag = await asyncio.to_thread(isimage, url)
+#     with open("1.txt", "w") as file:
+#         print(flag, "file=1.txt")
+#     await message.answer(flag)
 
 
 

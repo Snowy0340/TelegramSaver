@@ -3,6 +3,7 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from dotenv import load_dotenv
 from handlers.routes import router
+from ytdlp import isimages
 
 load_dotenv()
 TOKEN = getenv("BOT_TOKEN")

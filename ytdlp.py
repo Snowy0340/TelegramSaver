@@ -8,6 +8,20 @@ ydl_opts = {
         #'format' : 'best'
     }
 
+
+# проверяем является ли тикток фотографиями
+def isimages(url):
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        # Получаем метаданные
+        info = ydl.extract_info(url, download=False)
+        if info is None:
+            return None
+        if not info.get("duration") > 1:
+            return True
+
+
+
+
 def download_video(url):
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -20,8 +34,8 @@ def download_video(url):
         if info.get("is_live") or info.get("was_live"):
             return None
         
-        if info.get("duration") > 1:
-            return download_images(url)
+        #if not info.get("duration") > 1:
+        #    return download_images(url)
 
         # Проверка вертикальности (height > width)
         vertical = False
