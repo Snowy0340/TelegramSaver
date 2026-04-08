@@ -2,40 +2,30 @@ import yt_dlp
 import os
 
 ydl_opts = {
-        'outtmpl': 'video.%(ext)s',  # перезаписывает файл каждый раз
+        'outtmpl': 'video.%(ext)s',  # расширение файла
         'noplaylist': True,  # не скачиваем плейлисты
         'quiet' : True,
-        #'format' : 'best'
+        'format': 'bestvideo + bestaudio',
+         'merge_output_format': 'mp4' # скачиваем в лучшем формате и склеиваем в mp4 с помощью ffmpeg
     }
-
-
-# проверяем является ли тикток фотографиями
-def isimages(url):
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        # Получаем метаданные
-        info = ydl.extract_info(url, download=False)
-        if info is None:
-            return None
-        if not info.get("duration") > 1:
-            return True
-
-
-
 
 def download_video(url):
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         # Получаем метаданные без скачивания
-        info = ydl.extract_info(url, download=False)
-        if info is None:
-            return None
+        try:
+            info = ydl.extract_info(url, download=False)
+            if info is None:
+                return None
+        except Exception:
+            return "image"
 
         # Исключаем стримы
         if info.get("is_live") or info.get("was_live"):
             return None
         
-        #if not info.get("duration") > 1:
-        #    return download_images(url)
+        if not info.get("duration") > 1:
+            return "image"
 
         # Проверка вертикальности (height > width)
         vertical = False
@@ -55,36 +45,3 @@ def download_video(url):
         # Возвращаем путь к файлу
         filename = ydl.prepare_filename(info)
         return filename
-    
-
-def download_images(url):
-
-    ydl_opts = {
-        'skip_download': True,
-        'writethumbnail': True,
-        'quiet': True,
-        'outtmpl': 'image_%(autonumber)s.%(ext)s'
-    }
-    files = []
-
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(url, download=True)
-
-        # если несколько картинок
-        if 'entries' in info:
-            for entry in info['entries']:
-                if 'thumbnails' in entry:
-                    for thumb in entry['thumbnails']:
-                        filename = thumb.get('filepath')
-                        if filename and os.path.exists(filename):
-                            files.append(filename)
-
-        # если одна картинка
-        else:
-            thumb = info.get('thumbnails')
-            if thumb:
-                filename = thumb[-1].get('filepath')
-                if filename and os.path.exists(filename):
-                    files.append(filename)
-
-    return files
