@@ -26,6 +26,9 @@ def download_video(url):
         
         if not info.get("duration") > 1:
             return "image"
+        
+        if info.get("duration") > 630:
+            return "duration"
 
         # Проверка вертикальности (height > width)
         vertical = False

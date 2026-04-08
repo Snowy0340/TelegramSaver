@@ -24,6 +24,10 @@ async def penis(message: Message):
             await message.reply("К сожалению, я не умею скачивать картинки.")
             return
         
+        if file == "duration": # Если картинка, выводим "Пошел нахуй"
+            await message.reply("К сожалению, я не умею скачивать видео длиннее 10 минут.")
+            return
+
         video = FSInputFile(file)
         await message.reply_video(
             video=FSInputFile("video.mp4")
