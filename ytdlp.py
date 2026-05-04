@@ -5,7 +5,7 @@ ydl_opts = {
         'outtmpl': 'video.%(ext)s',  # расширение файла
         'noplaylist': True,  # не скачиваем плейлисты
         'quiet' : True,
-        'format': 'bestvideo + bestaudio',
+        'format': 'best',
          'merge_output_format': 'mp4' # скачиваем в лучшем формате и склеиваем в mp4 с помощью ffmpeg
     }
 
@@ -13,22 +13,24 @@ def download_video(url):
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         # Получаем метаданные без скачивания
-        try:
-            info = ydl.extract_info(url, download=False)
-            if info is None:
-                return None
-        except Exception:
-            return "image"
+        #try:
+        info = ydl.extract_info(url, download=False)
+        print(info)
+        if info is None:
+            return (None, None)
+        #except Exception:
+         #   print(Exception)
+          #  return
 
         # Исключаем стримы
         if info.get("is_live") or info.get("was_live"):
-            return None
+            return ("stream", None)
         
         if not info.get("duration") > 1:
-            return "image"
+            return ("image", )
         
         if info.get("duration") > 630:
-            return "duration"
+            return ("duration", info.get("duration"))
 
         # Проверка вертикальности (height > width)
         vertical = False
@@ -40,10 +42,14 @@ def download_video(url):
                 break
 
         if not vertical:
-            return None  # видео не вертикальное
+            return ("vertical", None)  # видео не вертикальное
 
         # Скачиваем видео
+        # try:
         ydl.download([url])
+        
+        # except Exception:
+        #     return Exception
 
         # Возвращаем путь к файлу
         filename = ydl.prepare_filename(info)
