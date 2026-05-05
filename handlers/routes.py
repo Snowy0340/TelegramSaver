@@ -33,22 +33,22 @@ async def mesage_interaction(message: Message):
         url = message.text
         file = await asyncio.to_thread(download_video, url)
 
-        if file[0] == "image": # Если картинка, выводим "Пошел нахуй"
+        if file[0] == "image": # image error
             if debug_flag:
                 await message.reply("format error: image")
             return
         
-        if file[0] == "vertical": # Если картинка, выводим "Пошел нахуй"
+        if file[0] == "vertical": # vertical error
             if debug_flag:
                 await message.reply("format error: vertical")
             return
         
-        if file[0] == "stream": # Если картинка, выводим "Пошел нахуй"
+        if file[0] == "stream": # stream error
                 if debug_flag:
                     await message.reply("error: stream")
                 return
 
-        if file[0] == "duration": # Если картинка, выводим "Пошел нахуй"
+        if file[0] == "duration": # duration error
             if debug_flag:
                 await message.reply(f"duration error\nduration: {file[1]} sec")
             return
@@ -57,8 +57,12 @@ async def mesage_interaction(message: Message):
         #     if debug_flag: await message.reply(file)
 
         video = FSInputFile(file[0])
-        await message.reply_video(
-            video=FSInputFile("video.mp4")
-        )
-        os.remove("video.mp4")
+        try:
+            await message.reply_video(
+                video=FSInputFile("video.mp4")
+            )
+            os.remove("video.mp4")
+        except Exception: 
+            if debug_flag:
+                await message.reply(f"unexpected error! {Exception}")
     else: return
