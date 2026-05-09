@@ -42,7 +42,8 @@ def download_video(url):
                 break
 
         if not vertical:
-            return ("vertical", None)  # видео не вертикальное
+            if "youtu" in url:
+                return ("vertical", None)  # видео не вертикальное
 
         # Скачиваем видео
         # try:
